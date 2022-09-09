@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    * {
+      background-color: black;
+      color: white;
+    }
+    body {
+      height: 100vh;
+      width: 100%;
+      overflow: scroll;
+      display: flex;
+      justify-content: center;
+      /* align-items: center; */
+    }
+
+    .form {
+      display: flex;
+      flex-direction: column;
+
+    }
+
+    .form input {
+      margin: 5px;
+    }
+
+    input {
+      border: 1px solid white;
+    }
+
+    #btn {
+      height: 30px;
+      
+    }
+
+    #loading {
+      margin-top: 10px;
+    }
+  </style>
+  <body>
+    <div class="form">
+      <h1>Physics Marks Scheme</h1>
+
+      <select name="season" id="season">
+        <option value="s">Summer</option>
+        <option value="w">Winter</option>
+        <option value="m">February March</option>
+      </select>
+      Year (Last 2 digit):<input type="number" id="year" placeholder="Year last 2 digit eg: 21" />
+      Variant:<input type="number" id="variant" placeholder="Enter Variant eg: 43" />
+      <input type="submit" id="btn" value="View Marks Scheme" />
+      <div id="loading"></div>
+    </div>
+    <div id="holder"></div>
+  </body>
+
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.0.385/build/pdf.min.js"></script>
+  <script>
+    const btn = document.querySelector("#btn");
+
+    btn.addEventListener("click", () => {
+      const season = document.querySelector("#season").value;
+      const year = document.querySelector("#year").value;
+      const variant = document.querySelector("#variant").value;
+
+      Array.from(document.getElementById("holder").children).forEach(
+        (i) => {
+          i.remove();
+        }
+      );
+
+      renderPDF([season, year, variant], document.getElementById("holder"));
+    });
+
+    function renderPDF(info, canvasContainer, options) {
+      options = options || { scale: 1.5 };
+
+      function renderPage(page) {
+        var viewport = page.getViewport(options.scale);
+        var wrapper = document.createElement("div");
+        wrapper.className = "canvas-wrapper";
+        var canvas = document.createElement("canvas");
+        var ctx = canvas.getContext("2d");
+        var renderContext = {
+          canvasContext: ctx,
+          viewport: viewport,
+        };
+
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        wrapper.appendChild(canvas);
+        canvasContainer.appendChild(wrapper);
+
+        page.render(renderContext);
+      }
+
+      function renderPages(pdfDoc) {
+        for (var num = 1; num <= pdfDoc.numPages; num++)
+          pdfDoc.getPage(num).then(renderPage);
+      }
+
+      var BASE64_MARKER = ";base64,";
+
+      function convertDataURIToBinary(dataURI) {
+        var base64Index = dataURI.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
+        var base64 = dataURI.substring(base64Index);
+        var raw = window.atob(base64);
+        var rawLength = raw.length;
+        var array = new Uint8Array(new ArrayBuffer(rawLength));
+
+        for (var i = 0; i < rawLength; i++) {
+          array[i] = raw.charCodeAt(i);
+        }
+        return array;
+      }
+
+      document.getElementById("loading").innerHTML = "<h1>Loading past paper ...</h1>"
+
+      fetch(
+        `/api?season=${info[0]}&year=${info[1]}&variant=${info[2]}`
+      )
+        .then((res) => {
+          if (res.status === 404) {
+            return res.json();
+          } else {
+            return res.text();
+          }
+        })
+        .then((data) => {
+          document.getElementById("loading").innerHTML = ""
+          if (data.error) {
+            alert(data.error);
+            return;
+          }
+          var pdfAsDataUri = data;
+          var pdfAsArray = convertDataURIToBinary(pdfAsDataUri);
+
+          PDFJS.disableWorker = true;
+          PDFJS.getDocument(pdfAsArray).then(renderPages);
+        });
+    }
+  </script>
+</html>
