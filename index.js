@@ -17,7 +17,7 @@ app.get("/api", async (req, res) => {
         season = season.toLowerCase()
 
         const resp = await fetch(
-            `https://dynamicpapers.com/wp-content/uploads/2015/09/9702_${season}${year}_ms_${variant}.pdf`
+            `https://dynamicpapers.com/wp-content/uploads/2015/09/9701_${season}${year}_ms_${variant}.pdf`
           );
           
           if(resp.status > 300) {
