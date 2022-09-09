@@ -36,7 +36,7 @@
 
     #btn {
       height: 30px;
-      
+
     }
 
     #loading {
@@ -120,7 +120,7 @@
         return array;
       }
 
-      document.getElementById("loading").innerHTML = "<h1>Loading past paper ...</h1>"
+      document.getElementById("loading").innerHTML = "<h1>Loading marks scheme ...</h1>"
 
       fetch(
         `/api?season=${info[0]}&year=${info[1]}&variant=${info[2]}`

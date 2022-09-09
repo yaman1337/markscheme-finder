@@ -21,7 +21,7 @@ app.get("/api", async (req, res) => {
           );
           
           if(resp.status > 300) {
-           return res.status(404).json({error: "Pastpaper not found"})
+           return res.status(404).json({error: "Marks scheme not found"})
           }
 
           const data = await resp.arrayBuffer()
