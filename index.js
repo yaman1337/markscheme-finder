@@ -18,9 +18,7 @@ app.get("/api", async (req, res) => {
     let url = `https://dynamicpapers.com/wp-content/uploads/2015/09/9702_${season}${
       year < 10 ? 0 : ""
     }${year}_ms_${variant}.pdf`;
-
-    console.log({ season, year });
-
+    
     let paper = parseInt(variant.split("")[0]);
 
     if (year === 4 && season === "s") {
@@ -32,8 +30,6 @@ app.get("/api", async (req, res) => {
     } else if (year < 4) {
       url = `https://dynamicpapers.com/wp-content/uploads/2015/09/9702_${season}0${year}_ms_1-2-3-4-5-6.pdf`;
     }
-
-    console.log(url);
 
     const resp = await fetch(url);
 
