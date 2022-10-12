@@ -40,6 +40,7 @@ app.get("/api", async (req, res) => {
     const data = await resp.arrayBuffer();
     const final =
       "data:application/pdf;base64, " + Buffer.from(data).toString("base64");
+    res.statusCode = 200
     res.send(final);
   } catch (error) {
     console.log(error);
