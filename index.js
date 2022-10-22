@@ -2,6 +2,9 @@ import fetch from "node-fetch";
 import express from "express";
 import cors from "cors";
 
+// PORT listener
+const port = process.env.PORT || 9000;
+
 const app = express();
 app.use(cors({origin: ["*"]}));
 app.use(express.static("public"));
@@ -48,6 +51,6 @@ app.get("/api", async (req, res) => {
   }
 });
 
-app.listen(process.env.PORT || 9000, () => {
-  console.log("Listening on port 9000");
+app.listen(port, () => {
+  console.log(`Listening on port ${port}`);
 });
